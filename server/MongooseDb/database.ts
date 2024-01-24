@@ -9,7 +9,7 @@ mongoose.connect(
 const todoSchema = new mongoose.Schema({
   userId: String,
   title: String,
-  discription: String,
+  description: String,
 });
 const userSchema = new mongoose.Schema({
   username: String,

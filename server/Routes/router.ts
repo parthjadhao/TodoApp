@@ -98,13 +98,13 @@ router.get("/", authorization, (req: customRequest, res) => {
 });
 
 router.post("/createTodo", authorization, (req: customRequest, res) => {
-  const { title, discription } = req.body;
+  const { title, description } = req.body;
   console.log(req.body);
-  console.log(discription);
+  console.log(description);
   const newTodo = new Todo({
     userId: req.userId,
     title: title,
-    discription: discription,
+    description: description,
   });
   newTodo
     .save()
