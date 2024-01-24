@@ -14,11 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const zod_1 = require("zod");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { Todo } = require("../MongooseDb/database.js");
-const { User } = require("../MongooseDb/database.js");
-const authorization = require("../Middleware/authentication.js");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const database_1 = require("../MongooseDb/database");
+const authentication_1 = __importDefault(require("../Middleware/authentication"));
 const SECRET = "sfgsgsdfs"; //env
 const router = express_1.default.Router();
 let userSignUpLoginInputValidation = zod_1.z.object({
@@ -32,20 +31,20 @@ router.post("/SignUp", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     const { username, password } = parsedData.data;
     try {
-        const isSameUser = yield User.findOne({ username: username });
+        const isSameUser = yield database_1.User.findOne({ username: username });
         if (isSameUser) {
             res.status(202).send("username is already taken");
         }
         else {
-            const hashedPassword = yield bcrypt.hash(password, 10);
-            const newUser = new User({
+            const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+            const newUser = new database_1.User({
                 username: username,
                 password: hashedPassword,
             });
             try {
                 const result = yield newUser.save();
                 const userId = result._id;
-                jwt.sign({ userId }, SECRET, (err, token) => {
+                jsonwebtoken_1.default.sign({ userId }, SECRET, (err, token) => {
                     if (err) {
                         return res.status(500).send("failed to create account, try again");
                     }
@@ -71,16 +70,16 @@ router.post("/Login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.status(403).send({ messege: "invalid output" });
     }
     const { username, password } = parsedData.data;
-    const user = yield User.findOne({ username: username });
+    const user = yield database_1.User.findOne({ username: username });
     if (!user) {
         return res.status(404).send("User not found");
     }
-    const isPasswordValid = yield bcrypt.compare(password, user.password);
+    const isPasswordValid = yield bcrypt_1.default.compare(password, user.password);
     if (!isPasswordValid) {
         return res.status(401).send("Invalid password");
     }
     const userId = user._id;
-    jwt.sign({ userId }, SECRET, (err, token) => {
+    jsonwebtoken_1.default.sign({ userId }, SECRET, (err, token) => {
         if (err) {
             return res.status(500).send("Unable to login, try again");
         }
@@ -89,9 +88,9 @@ router.post("/Login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     });
 }));
-router.get("/", authorization, (req, res) => {
+router.get("/", authentication_1.default, (req, res) => {
     const userId = req.userId;
-    Todo.find({ userId: userId })
+    database_1.Todo.find({ userId: userId })
         .then((allTodos) => {
         res.json(allTodos);
     })
@@ -100,9 +99,11 @@ router.get("/", authorization, (req, res) => {
         res.status(500).send({ error: true, message: "Unable to fetch todos" });
     });
 });
-router.post("/createTodo", authorization, (req, res) => {
+router.post("/createTodo", authentication_1.default, (req, res) => {
     const { title, discription } = req.body;
-    const newTodo = new Todo({
+    console.log(req.body);
+    console.log(discription);
+    const newTodo = new database_1.Todo({
         userId: req.userId,
         title: title,
         discription: discription,
@@ -123,11 +124,11 @@ router.post("/createTodo", authorization, (req, res) => {
             .send({ error: true, message: "Failed to create todo" });
     });
 });
-router.delete("/deleteTodo/:id", authorization, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/deleteTodo/:id", authentication_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const todoId = req.params.id;
     try {
         console.log(todoId);
-        const deleteTodo = yield Todo.findOneAndDelete({
+        const deleteTodo = yield database_1.Todo.findOneAndDelete({
             _id: todoId,
             userId: req.userId,
         });
@@ -142,4 +143,5 @@ router.delete("/deleteTodo/:id", authorization, (req, res) => __awaiter(void 0, 
         return res.status(500).send("failed to delete try again" + e);
     }
 }));
-module.exports = router;
+// module.exports = router;
+exports.default = router;

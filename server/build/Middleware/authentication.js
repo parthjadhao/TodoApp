@@ -8,10 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authorization = void 0;
-const { User } = require("../MongooseDb/database");
-const jwt = require("jsonwebtoken");
+const database_1 = require("../MongooseDb/database");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const SECRET = "sfgsgsdfs";
 const authorization = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Control speaking from middleware");
@@ -20,11 +22,10 @@ const authorization = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         return res.status(401).send("Unauthorized user");
     }
     try {
-        const result = yield jwt.verify(token, SECRET);
-        req.userId = result.userId;
-        console.log(result.userId);
-        const user = yield User.findOne({ _id: req.userId });
-        console.log(user);
+        const result = (yield jsonwebtoken_1.default.verify(token, SECRET));
+        req.userId = result.userId; // Assign userId to the request object
+        // Access userId only after successful assignment
+        const user = yield database_1.User.findOne({ _id: req.userId });
         if (!user) {
             return res.status(403).json({ error: "Authorization failed" });
         }
@@ -35,5 +36,4 @@ const authorization = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         return res.status(500).send("Authorization failed due to " + e.message);
     }
 });
-exports.authorization = authorization;
-// module.exports = authorization;
+exports.default = authorization;
