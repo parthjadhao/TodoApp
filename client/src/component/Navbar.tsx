@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Navbar() {
@@ -6,7 +5,9 @@ export default function Navbar() {
     <>
       <nav className="navbar bg-body-tertiary">
         <div className="container-fluid">
-          <Link className="navbar-brand">Todo.com</Link>
+          <Link to="/" className="navbar-brand">
+            Todo.com
+          </Link>
           <form className="d-flex" role="search">
             <button className="btn btn-outline-success mx-1" type="submit">
               <Link className="nav-link" to="/Signup">

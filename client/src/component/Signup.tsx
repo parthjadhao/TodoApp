@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { debounce } from 'lodash';
 
 export default function Signup() {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
   const signUpRequest = async () => {
     try {
       const response = await fetch("http://localhost:3000/SignUp", {
@@ -20,10 +22,12 @@ export default function Signup() {
       const data = await response.json();
       const token = data.token;
       localStorage.setItem("token", token);
+      navigate("/");
     } catch (err) {
       console.error("failed to sign-up : " + err);
     }
   };
+  const DbSignUpRequest = debounce(signUpRequest,1000)
 
   return (
     <div>
@@ -81,8 +85,8 @@ export default function Signup() {
 
               <div>
                 <button
-                  type="submit"
-                  onClick={signUpRequest}
+                  type="button"
+                  onClick={DbSignUpRequest}
                   className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Sign Up
@@ -92,12 +96,12 @@ export default function Signup() {
 
             <p className="mt-10 text-center text-sm text-gray-500">
               Already have account ?{" "}
-              <a
-                // href="#"
+              <Link
+                to="/Login"
                 className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
               >
                 Login
-              </a>
+              </Link>
             </p>
           </div>
         </div>

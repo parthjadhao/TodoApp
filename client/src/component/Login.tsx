@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState<string>();
@@ -7,7 +8,7 @@ export default function Login() {
 
   const LoginRequest = async () => {
     try {
-      const response = await fetch("http://localhost:3000/SignUp", {
+      const response = await fetch("http://localhost:3000/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,12 +115,12 @@ export default function Login() {
 
           <p className="mt-10 text-center text-sm text-gray-500">
             Don't have account ?{" "}
-            <a
-              href="#"
+            <Link
+              to="/Signup"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
               sign-up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
