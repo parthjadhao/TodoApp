@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { debounce } from 'lodash';
+import { debounce } from "lodash";
 
 export default function Signup() {
   const [username, setUsername] = useState<string>("");
@@ -27,7 +27,7 @@ export default function Signup() {
       console.error("failed to sign-up : " + err);
     }
   };
-  const DbSignUpRequest = debounce(signUpRequest,1000)
+  const DbSignUpRequest = debounce(signUpRequest, 1000);
 
   return (
     <div>

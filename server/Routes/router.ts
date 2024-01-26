@@ -3,7 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Todo, User } from "../MongooseDb/database";
-import authorization from "../Middleware/authentication";
+import { authorization, customRequest } from "../Middleware/authentication";
 
 const SECRET = "sfgsgsdfs"; //env
 const router = express.Router();
@@ -16,13 +16,13 @@ interface TodoType {
 }
 type TodoTypeArray = TodoType[];
 
-interface customRequest extends express.Request {
-  userId: String;
-}
 let userSignUpLoginInputValidation = z.object({
-  username: z.string().min(1).max(10),
-  password: z.string().min(8).max(18),
+  username: z.string().min(1).max(20),
+  password: z.string().min(8).max(20),
 });
+type signUpLoginInputValidation = z.infer<
+  typeof userSignUpLoginInputValidation
+>;
 router.post("/SignUp", async (req, res) => {
   const parsedData = userSignUpLoginInputValidation.safeParse(req.body);
   if (!parsedData.success) {

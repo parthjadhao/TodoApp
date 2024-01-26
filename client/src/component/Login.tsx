@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 
 export default function Login() {
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [loginRouteServerResponse, setLoginRouteServerResponse] = useState();
-
+  const navigate = useNavigate();
   const LoginRequest = async () => {
     try {
       const response = await fetch("http://localhost:3000/Login", {
@@ -23,10 +24,12 @@ export default function Login() {
       const token = data.token;
       localStorage.setItem("token", token);
       setLoginRouteServerResponse(data.message);
+      navigate("/");
     } catch (err) {
       console.error("failed to sign-up : " + err);
     }
   };
+  const DbLoginRequest = debounce(LoginRequest, 1000);
 
   useEffect(() => {
     if (loginRouteServerResponse == "username is already taken") {
@@ -104,7 +107,7 @@ export default function Login() {
 
             <div>
               <button
-                onClick={LoginRequest}
+                onClick={DbLoginRequest}
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
