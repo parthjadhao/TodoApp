@@ -1,13 +1,13 @@
 import { User } from "../MongooseDb/database";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-
+import Express from "../index";
 const SECRET = "sfgsgsdfs";
 export interface customRequest extends Request {
   userId: String;
 }
 export const authorization= async (
-  req: customRequest,
+  req: Express.Request,
   res: Response,
   next: NextFunction
 ) => {

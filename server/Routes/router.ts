@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Todo, User } from "../MongooseDb/database";
 import { authorization, customRequest } from "../Middleware/authentication";
+import Express from "../index";
+// import Request from "../index";
 
 const SECRET = "sfgsgsdfs"; //env
 const router = express.Router();
@@ -85,7 +87,7 @@ router.post("/Login", async (req, res) => {
   });
 });
 
-router.get("/", authorization, (req: customRequest, res) => {
+router.get("/", authorization, (req: Express.Request, res) => {
   const userId = req.userId;
   Todo.find({ userId: userId })
     .then((allTodos: TodoTypeArray) => {
@@ -97,7 +99,7 @@ router.get("/", authorization, (req: customRequest, res) => {
     });
 });
 
-router.post("/createTodo", authorization, (req: customRequest, res) => {
+router.post("/createTodo", authorization, (req: Express.Request, res) => {
   const { title, description } = req.body;
   console.log(req.body);
   console.log(description);
