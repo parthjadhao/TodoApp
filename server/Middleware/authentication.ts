@@ -1,13 +1,13 @@
 import { User } from "../MongooseDb/database";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import Express from "../index";
+// import Express from "../index"; no need to import this
 const SECRET = "sfgsgsdfs";
 export interface customRequest extends Request {
   userId: String;
 }
-export const authorization= async (
-  req: Express.Request,
+export const authorization = async (
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -20,10 +20,13 @@ export const authorization= async (
 
   try {
     const result = (await jwt.verify(token, SECRET)) as JwtPayload;
-    req.userId = result.userId; // Assign userId to the request object
+    // you cant assign req values, they are sent from frontend
+    // also req is an object it holds data in headers and body
+    // req.userId is invalid
+    const userId = result.userId; // Assign userId to the request object
 
     // Access userId only after successful assignment
-    const user = await User.findOne({ _id: req.userId });
+    const user = await User.findOne({ _id: userId });
 
     if (!user) {
       return res.status(403).json({ error: "Authorization failed" });

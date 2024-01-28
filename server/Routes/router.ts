@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Todo, User } from "../MongooseDb/database";
 import { authorization, customRequest } from "../Middleware/authentication";
-import Express from "../index";
+// import Express from "../index"; 
 // import Request from "../index";
 
 const SECRET = "sfgsgsdfs"; //env
@@ -87,8 +87,8 @@ router.post("/Login", async (req, res) => {
   });
 });
 
-router.get("/", authorization, (req: Express.Request, res) => {
-  const userId = req.userId;
+router.get("/", authorization, (req: express.Request, res: express.Response) => {
+  const userId = req.headers.userId;
   Todo.find({ userId: userId })
     .then((allTodos: TodoTypeArray) => {
       res.json(allTodos);
@@ -99,12 +99,14 @@ router.get("/", authorization, (req: Express.Request, res) => {
     });
 });
 
-router.post("/createTodo", authorization, (req: Express.Request, res) => {
+router.post("/createTodo", authorization, (req: express.Request, res) => {
   const { title, description } = req.body;
   console.log(req.body);
   console.log(description);
   const newTodo = new Todo({
-    userId: req.userId,
+    userId: req.body.userId,
+    // req cant hold this type of data, its either send in headers or body of the request
+    // since it is a post request, the data is supposed to be in the body
     title: title,
     description: description,
   });
@@ -124,7 +126,7 @@ router.post("/createTodo", authorization, (req: Express.Request, res) => {
         .send({ error: true, message: "Failed to create todo" });
     });
 });
-
+// well i dont understand this fluff aand what you are trying to acheive here
 router.delete(
   "/deleteTodo/:id",
   authorization,
